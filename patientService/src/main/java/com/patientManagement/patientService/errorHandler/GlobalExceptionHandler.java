@@ -28,4 +28,13 @@ public class GlobalExceptionHandler {
         error.put("message", "Email already exists");
         return ResponseEntity.badRequest().body(error);
     }
+
+    @ExceptionHandler(PatientNotExists.class)
+    public ResponseEntity<Map<String, String>> handlePatientNotExists(PatientNotExists ex){
+        Map<String, String> error = new HashMap<>();
+        Logger logger = org.slf4j.LoggerFactory.getLogger(GlobalExceptionHandler.class);
+        logger.error("patient don't exists : {}", ex.getMessage());
+        error.put("message","Patient doesn't exists");
+        return ResponseEntity.badRequest().body(error);
+    }
 }

@@ -46,4 +46,8 @@ patientService :
             EmailAlreadyExistsCheck :
                 throw Exception EmailAlreadyExists and handle it
                 add boolean function in repo that return value based on if email Exists
+        updatePatients :
+            patientId can be fetched from the path and patientRequestDto is passed
+            search for patient and diff patient with patientRequestDto.email and handle the Exception
+            change field registeredDate for class CreateUser
 
