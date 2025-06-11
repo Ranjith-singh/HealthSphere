@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.patientManagement.patientService.dtos.PatientRequestDto;
 import com.patientManagement.patientService.dtos.PatientResponseDto;
+import com.patientManagement.patientService.errorHandler.EmailAlreadyExistsException;
 import com.patientManagement.patientService.mapper.PatientMapper;
 import com.patientManagement.patientService.models.Patient;
 import com.patientManagement.patientService.repository.PatientRepository;
@@ -17,12 +18,15 @@ public class PatientService {
     @Autowired
     private PatientRepository patientRepository;
 
-    public List<PatientResponseDto> getPatients(){
+    public List<PatientResponseDto> getPatients() {
         List<Patient> patients = patientRepository.findAll();
         return patients.stream().map(patient -> PatientMapper.toDto(patient)).toList();
     }
 
-    public PatientResponseDto createPatient(PatientRequestDto patientRequestDto){
+    public PatientResponseDto createPatient(PatientRequestDto patientRequestDto) {
+        if (patientRepository.existsByEmail(patientRequestDto.getEmail())) {
+            throw new EmailAlreadyExistsException("Email already exists: " + patientRequestDto.getEmail());
+        }
         Patient patient = PatientMapper.topatient(patientRequestDto);
         PatientResponseDto patientResponseDto = PatientMapper.toDto(patientRepository.save(patient));
         return patientResponseDto;

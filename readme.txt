@@ -43,4 +43,7 @@ patientService :
             errorHandler :
                 handles errors occurs in the fields of the requestBody when compared with patientRequestDto
             mapper from dto to patient model is created
+            EmailAlreadyExistsCheck :
+                throw Exception EmailAlreadyExists and handle it
+                add boolean function in repo that return value based on if email Exists
 
