@@ -15,6 +15,11 @@ Architecture :
     models :
         represents the schema of the database tables as entity
 
+h2Database :
+    url : http://localhost:4000/h2-console
+    datasource : jdbc:h2:mem:testdb
+    it uses in memory ram to store the data so data is volatile
+
 patientService :
     note :
         you can't use autowired inside a method or to a entity not managed by Spring
@@ -50,4 +55,90 @@ patientService :
             patientId can be fetched from the path and patientRequestDto is passed
             search for patient and diff patient with patientRequestDto.email and handle the Exception
             change field registeredDate for class CreateUser
+        deletePatients :
+            check if patient exists in the database
+            get the patient's data and delete the patient using patientId
+            return the patientResponseDto
+
+springdoc :
+    add the dependency
+    use tags and operation with name and summary to give info
+    url : http://localhost:4000/v3/api-docs provides an openApi of your project
+    pass the json to Swagger editor to get UI/UX of the cred operations
+
+docker :
+    create a image of software tools, database, redisCache and tier 3 microservices(your code)
+    run the image to create and run the container which consist of all the configured software in the image
+    avoids version compatible errors and ease of software import
+    we can also clone the images present in the dockerhub ex :
+        postgresDB
+        python
+    In our springboot project :
+        create a image consisting of :
+            java runtime(jdk)
+            config files : application.properties and pom.xml
+            microservices
+        the image is stored in local dockerImageRegistry which can be run using docker cmds to create a container
+        the image can be moved to cloud using dockerhub where it can be cloned and run on cloud servers or any other machines
+        Dockerfile:
+            docker images can be build from a docker file when we run the .jar files
+            builder and runner are used to create and run the .jar files resp
+            working :
+                build:
+                    in our case we use the maven:3.9.9-eclipse-temurin-21 as builder which consist of both jdk-21 and maven
+                    specify the working directory as /app
+                    copy the pom.xml file into to the app directory
+                    download/prefetch the maven dependencies into the app directory for faster execution
+                    copy the /src repository into the app/src directory
+                    run mvn clean package :
+                        To clean the /target repo for any previous created files
+                        package the code into a executable .jar file and place it in /target
+                    note :
+                        the .jar file that is generated will be based on the artifactId of the project
+                run :
+                    we use openjdk:21-jdk as runner
+                    specify the working directory as /app
+                    copy the .jar file from /app/target/<filename> to /app.jar
+                    specify the port as 4000
+                    specify the entrypoint as ['java','-jar','app.jar']:
+                        which executes java -jar app.jar cmd when we build cmd to build image from the docker file
+        docker-compose.yml :
+            configure and run multiple services
+            working :
+                in our case we configure and run 2 services from images :
+                    postgres:latest(database)
+                    patient-service:latest(generated from Dockerfile)
+                patient-service-db:
+                    uses the postgres:latest image to build container
+                    specify the local and container ports resp
+                    configure the env variables like:
+                        POSTGRES_USER: admin
+                        POSTGRES_PASSWORD: password
+                        POSTGRES_DB: patientServiceDb
+                    set the network as internal for ease of communication b/w the services
+                    And store the data /var/lib/postgres/data in local patientServiceData :
+                        for easy retrieval
+                        data remains even if the container is destroyed
+                patientService :
+                    depends on patient-service-db for the database
+                    builds the image from the Dockerfile and adds it to the cur dir
+                    image tag :
+                        names and uses the image generated from the Dockerfile to build container
+                    specify the local and container ports resp
+                    note : make sure to add postgres dependency to communicate with patientServiceDb
+                    specify env variables :
+                        SPRING_DATASOURCE_URL: jdbc:postgresql://patient-service-db:5432/patientServiceDb
+                        SPRING_DATASOURCE_USERNAME: admin
+                        SPRING_DATASOURCE_PASSWORD: password
+                        SPRING_JPA_HIBERNATE_DDL_AUTO: update //Updates the database schema on startup
+                        SPRING_SQL_INIT_MODE: always // update the database with the .sql file in the application properties
+                    add this service to the same network as patient-service-db
+                docker compose up -d builds and run the containers
+                    
+
+
+                
+
+
+
 

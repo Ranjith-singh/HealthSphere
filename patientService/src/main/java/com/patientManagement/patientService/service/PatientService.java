@@ -39,7 +39,7 @@ public class PatientService {
         if(!patientRepository.existsById(id)){
             throw new PatientNotExists("patient doesn't exists: "+ id);
         }
-        System.out.println("value :"+patientRepository.existsByEmailAndIdNot(patientRequestDto.getEmail(), id));
+        // System.out.println("value :"+patientRepository.existsByEmailAndIdNot(patientRequestDto.getEmail(), id));
         if(patientRepository.existsByEmailAndIdNot(patientRequestDto.getEmail(), id)){
             throw new EmailAlreadyExistsException("Email Already exists" + patientRequestDto.getEmail());
         }
@@ -51,6 +51,15 @@ public class PatientService {
         patient.setDateOfBirth(LocalDate.parse(patientRequestDto.getDateOfBirth()));
 
         PatientResponseDto patientResponseDto = PatientMapper.toDto(patientRepository.save(patient));
+        return patientResponseDto;
+    }
+
+    public PatientResponseDto deletePatient(UUID id){
+        if(!patientRepository.existsById(id)){
+            throw new PatientNotExists("Patient doesn't exists"+id);
+        }
+        PatientResponseDto patientResponseDto = PatientMapper.toDto(patientRepository.getById(id));
+        patientRepository.deleteById(id);
         return patientResponseDto;
     }
 }

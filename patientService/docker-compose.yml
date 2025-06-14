@@ -1,0 +1,40 @@
+services :
+  patient-service-db:
+    image: postgres:latest
+    ports:
+      - "5000:5432"
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: patientServiceDb
+    networks:
+      - internal
+    volumes:
+      - patientServiceData:/var/lib/postgresql/data
+
+  patientService:
+    depends_on:
+      - patient-service-db
+    build: .
+    image: patient-service:latest
+    ports:
+      - "4000:4000"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://patient-service-db:5432/patientServiceDb
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: password
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_SQL_INIT_MODE: always
+    networks:
+      - internal
+
+volumes:
+  patientServiceData:
+
+networks:
+  internal:
+    driver: bridge
+
+
+
+        
