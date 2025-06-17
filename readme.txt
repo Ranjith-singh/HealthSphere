@@ -134,6 +134,27 @@ docker :
                         SPRING_SQL_INIT_MODE: always // update the database with the .sql file in the application properties
                     add this service to the same network as patient-service-db
                 docker compose up -d builds and run the containers
+
+BillingService :
+    This service is based on the grpc(grpc remote procedural calls)
+    the grpc intern uses http/2 which is faster then the http/1.1 used for restApi's
+    the grpc dependencies and build/plugin can be found in its documentation itself
+    grpc :
+        the protobuf(protocol buffer) file is used to specify the grpc client and server
+        the .proto file :
+            you specify the package name, rpc method through which they communicate and the message(request/response) types
+        compile or clean install the project
+        the .proto file gets converted into .java file turns file names from pascel casing into camel casing
+        it also generates the dto's for request and response and well as getters and setters
+    we create a grpc service that extends the base BillingServiceImpl class
+    in which we override the rpc method with our own method
+    we can send stream of response/multiple response
+    mainly used for :
+        live dashboards
+        live data stream
+        gaming etc.
+    make sure to complete the response after the business logic
+
                     
 
 
