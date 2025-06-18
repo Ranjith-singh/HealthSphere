@@ -25,6 +25,8 @@ services :
       SPRING_DATASOURCE_PASSWORD: password
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       SPRING_SQL_INIT_MODE: always
+      BILLING_SERVICE_ADDRESS: BillingService
+      BILLING_SERVICE_GRPC_PORT: 9001
     networks:
       - internal
 
@@ -33,7 +35,8 @@ volumes:
 
 networks:
   internal:
-    driver: bridge
+    external: true
+    name: shared-internal
 
 
 

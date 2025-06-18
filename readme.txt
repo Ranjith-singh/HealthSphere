@@ -141,6 +141,7 @@ BillingService :
     the grpc dependencies and build/plugin can be found in its documentation itself
     grpc :
         the protobuf(protocol buffer) file is used to specify the grpc client and server
+        in our case client is patientService and server is BillingService
         the .proto file :
             you specify the package name, rpc method through which they communicate and the message(request/response) types
         compile or clean install the project
@@ -154,6 +155,28 @@ BillingService :
         live data stream
         gaming etc.
     make sure to complete the response after the business logic
+
+grpc client :
+    we need to configure the grpc client which is patientService using protobuf
+    so copy the same .proto fie into patientService and make sure all the dependencies and builds are available
+    then compile the project to get BillingServiceGrpc and the request/response dto's and getters/setters.
+    create a BillingServiceGrpcClient.java file:
+        since it is a client it is a general service not grpcService
+        create a billingStub which helps in client side communication using Blockingstub of BillingServiceGrpc
+        get serverAddress and serverPort for billing
+        configure a managedChannel from the serverAddress and serverPort
+        assign value to the billingStub using the managedChannel
+        create a method which takes patientId, username & email and creates billingAccount using billingStub and returns response
+    pass env variables in the compose.yml for BILLING_SERVICE_ADDRESS:BillingService because the service name created in the shared container
+    and pass the port : 9001(grpc port)
+    
+network :
+    create a new network called shared-internal
+    provide a name to e used among services
+    specify external:true to inform docker that the network already Exists
+
+after this we would have created a 1:1 service communication
+
 
                     
 
