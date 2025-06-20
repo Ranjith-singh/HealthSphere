@@ -176,6 +176,53 @@ network :
     specify external:true to inform docker that the network already Exists
 
 after this we would have created a 1:1 service communication
+but for 1:n microservice :
+    this would take a lot of time
+    and if in between any service collapses the response would be stuck
+    for this reason we use apache kafka
+
+apache kafka :
+    handle 1:n communication with ease
+    doesn't collapse in between
+    use pub/sub logic
+    process:
+        we create a kafka cluster and assign a broker to communicate with it
+        in this we create a kafka topic managed by broker through which the producer and consumer communicate
+        the producer pushes the evnet/data inside the topic and continues it execution
+        it leaves the kafka topic to handle the data/event
+        the consumer subscribes to the topic and listens on it
+        based on the events given by the producer the consumer performs it tasks
+        insides:
+            multiple topics are created within a same cluster for different event/data
+            within a topic their are partitions and offset
+            partitions to handle the large incoming data to a particular topic and split them into different partition
+            each data/event inside a partition is assigned a offset number to uniquely identify the data
+            the large data coming from different partitions can't be handled by single consumer
+            so we create multiple copies of the consumer and assign them to a single group for ease data handling
+    code:
+        KafkaProducer:
+            we can either configure it for the rest or grpc request/response
+            configuring grpc in patientService:
+                create a .proto file in same format as billing for KafkaProducer called patientEvent
+                create a message of type patientEvent
+                compile the patientService to generate dto's and getters/setters for the patientEvent
+                create a KafkaProducer @service inside the patientService:
+                    which acts as client side of the grpc service
+                use kafkaTemplate to send data/event to the topic:
+                    specify the key and value types
+                    key value:
+                        is the name of the topic to which you send data
+                    create a patientEvent object and pass it as a value inside the kafkaTemplate.send()
+        the consumer who has subscribed to the topic will receive the message
+        set the kafka key and value types in the application properties file
+        inside the compose.yml set SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092:
+            as kafka is the name of the container created
+        
+
+
+
+
+    
 
 
                     

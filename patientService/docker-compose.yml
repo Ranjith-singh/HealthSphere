@@ -27,6 +27,7 @@ services :
       SPRING_SQL_INIT_MODE: always
       BILLING_SERVICE_ADDRESS: BillingService
       BILLING_SERVICE_GRPC_PORT: 9001
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     networks:
       - internal
 
