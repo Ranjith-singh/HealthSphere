@@ -1,0 +1,15 @@
+services:
+  analyticsService:
+    build: .
+    image: analytics-service:latest
+    ports:
+      - "4002:4002"
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    networks:
+      - internal
+
+networks:
+  internal:
+    external: true
+    name: shared-internal

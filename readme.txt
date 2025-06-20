@@ -217,6 +217,39 @@ apache kafka :
         set the kafka key and value types in the application properties file
         inside the compose.yml set SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092:
             as kafka is the name of the container created
+
+        KafkaConsumer:
+            create a same protobuf's .proto for the patientEvent
+            subscribe and listen to a topic using KafkaListener annotation on a method:
+                provide <topic name, groupId of consumer/Listener>
+            pass the value and its type(sent by producer)as arg to the method
+            retrieve the value and convert it into patientEvent type using the protobuf generated method
+            log the results
+
+client communicates directly with the multiple services:
+    this leads to dependency on the ports of the microservice:
+        if port changes the entire uri of the client changes
+    the port get exposed to the outside world which may lead to DDOS and various attacks
+    solution:
+        creation of authService/apiGateway:
+            the client communicates with the apiGateway which internally communicates with rest of the services
+            only the authService port is exposed to the outside world
+
+apiGateway/authService:
+    include the reactor gateway dependency
+    configure the application.properties/application.yml file:
+        provide the source port
+        configure the Spring.cloud.gateway routes to listen
+        provide the id's, uri's, and predicate's to monitor
+        uri:
+            when the apiGateway port is hit which url to refer
+        predicate and filter:
+            use path arg in predicate to monitor
+            filter to navigate if the path is called
+    remove the exposed patientService port
+
+
+
         
 
 
