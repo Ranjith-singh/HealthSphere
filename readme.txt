@@ -231,11 +231,11 @@ client communicates directly with the multiple services:
         if port changes the entire uri of the client changes
     the port get exposed to the outside world which may lead to DDOS and various attacks
     solution:
-        creation of authService/apiGateway:
+        creation of apiGateway:
             the client communicates with the apiGateway which internally communicates with rest of the services
-            only the authService port is exposed to the outside world
+            only the apiGateway port is exposed to the outside world
 
-apiGateway/authService:
+apiGateway:
     include the reactor gateway dependency
     configure the application.properties/application.yml file:
         provide the source port
@@ -247,6 +247,28 @@ apiGateway/authService:
             use path arg in predicate to monitor
             filter to navigate if the path is called
     remove the exposed patientService port
+
+authService:
+    controller:
+        create a authenticate method in the controller at /login route
+    service:
+        get the user details from the LoginRequestDto's email
+        get passwordEncoder:
+            use SecurityFilterChain method which intern uses HttpSecurity arg to:
+                permit all requests using authorizeHttpRequests method
+                crsf method for cross file resource sharing
+            And then build the HttpSecurity
+            compare the passwords using the passwordEncoder method from SecurityConfig which intern uses bcrypt passwordEncoder
+        if password matches create a jwtToken form User model and jwtSecret
+            using Base64.getDecoder.decode method to get byte array from the String using UTF-8 encoding
+            then the byte array is converted to Key type using the hmacShaKeyFor method
+            then the key is used for signing of the token created using JWTS framework
+        note :
+            keep the return type as Optional<String> because :
+                match password return password
+                unmatched password return null
+            
+
 
 
 
