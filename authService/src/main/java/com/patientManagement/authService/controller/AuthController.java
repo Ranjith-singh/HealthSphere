@@ -5,8 +5,10 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.patientManagement.authService.dto.LoginRequestDto;
@@ -33,5 +35,17 @@ public class AuthController {
         String token=optionalToken.get();
         return ResponseEntity.ok(new LoginResponseDto(token));
     }
+
+    @Operation(summary = "Validate Jwt token")
+    @GetMapping("/validate")
+    public ResponseEntity<Void> validateToken(@RequestHeader("Authorization") String BearerToken) {
+        if(BearerToken==null || !BearerToken.startsWith("Bearer ")){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        return authService.validateToken(BearerToken.substring(7))
+        ? ResponseEntity.ok().build()
+        : ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+    
 }
 

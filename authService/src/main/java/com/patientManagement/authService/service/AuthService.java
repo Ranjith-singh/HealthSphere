@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import com.patientManagement.authService.dto.LoginRequestDto;
 import com.patientManagement.authService.util.JwtUtil;
 
+import io.jsonwebtoken.JwtException;
+
 @Service
 public class AuthService {
     
@@ -27,6 +29,16 @@ public class AuthService {
         .map(user -> jwtUtil.generateToken(user.getEmail(),user.getPassword()));
 
         return token;
+    }
+
+    public boolean validateToken(String token){
+        try {
+            jwtUtil.validateToken(token);
+            return true;
+        }
+        catch (JwtException e) {
+            return false;
+        }
     }
 
 }

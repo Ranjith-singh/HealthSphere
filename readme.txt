@@ -249,24 +249,32 @@ apiGateway:
     remove the exposed patientService port
 
 authService:
-    controller:
-        create a authenticate method in the controller at /login route
-    service:
-        get the user details from the LoginRequestDto's email
-        get passwordEncoder:
-            use SecurityFilterChain method which intern uses HttpSecurity arg to:
-                permit all requests using authorizeHttpRequests method
-                crsf method for cross file resource sharing
-            And then build the HttpSecurity
-            compare the passwords using the passwordEncoder method from SecurityConfig which intern uses bcrypt passwordEncoder
-        if password matches create a jwtToken form User model and jwtSecret
-            using Base64.getDecoder.decode method to get byte array from the String using UTF-8 encoding
-            then the byte array is converted to Key type using the hmacShaKeyFor method
-            then the key is used for signing of the token created using JWTS framework
-        note :
-            keep the return type as Optional<String> because :
-                match password return password
-                unmatched password return null
+    login :
+        controller:
+            create a authenticate method in the controller at /login route
+        service:
+            get the user details from the LoginRequestDto's email
+            get passwordEncoder:
+                use SecurityFilterChain method which intern uses HttpSecurity arg to:
+                    permit all requests using authorizeHttpRequests method
+                    crsf method for cross file resource sharing
+                And then build the HttpSecurity
+                compare the passwords using the passwordEncoder method from SecurityConfig which intern uses bcrypt passwordEncoder
+            if password matches create a jwtToken form User model and jwtSecret
+                using Base64.getDecoder.decode method to get byte array from the String using UTF-8 encoding
+                then the byte array is converted to Key type using the hmacShaKeyFor method
+                then the key is used for signing of the token created using JWTS framework
+            note :
+                keep the return type as Optional<String> because :
+                    match password return password
+                    unmatched password return null
+    validate:
+        send a header called Authorization with BearerToken as value
+        check if the token is null or without Bearer prefix
+        pass only the token to the auth Service to check and return boolean value
+        use jwtUtils class to verify the token
+        use JWTS.parser.verifywith((Secretkey) secretkey) method to verify token
+            and parseSignedClaims() to verify signature of the token
             
 
 
