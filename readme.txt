@@ -276,6 +276,38 @@ authService:
         use JWTS.parser.verifywith((Secretkey) secretkey) method to verify token
             and parseSignedClaims() to verify signature of the token
             
+Now we need to configure authService
+    in such a way that it should be accessible only through api-gateway just like patientService
+
+Every request to patientService should pass through custom JwtValidationGatewayFilterFactory in the apiGateway:
+    Create and initialize a webClient using the webClient.Builder and authServiceUrl :
+        webClient can be used to send/receive request/response using the uri
+    extend a AbstractGatewayFilterFactory<Object> and add override the natural GatewayFilter method using your own:
+        return a function to this method which consist of 2 arg:
+            exchange:
+                it is used for :
+                    Altering the received request entity
+                    Altering the response entity to be sent
+                through exchange we get the token from Authorization header
+                if token is null or doesn't have Bearer Key:
+                    add unauthorized statusCode to the response
+                    complete the response
+            chain:
+                it used to add our middleware code inBetween the chain and pass the chain
+            use webClient to :
+                run a getRequest to the uri(webClient uri + /validate)
+                add the token to the Auth header
+                retrieve the response if ok
+                    pass the chain.filter with exchange as arg
+                else :
+                    throws a JwtException handled by the custom class JwtValidationException:
+                        handles only the webClient's unauthorized Exception class
+                        use the exchange passed as arg to alter the response to desired one
+                        complete the response
+    add a JwtValidation Filter to the request path to patientService in apiGateway application.yml
+
+provide a path through apiGateway to auth-docs similar to patient-docs
+
 
 
 
