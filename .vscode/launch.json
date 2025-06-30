@@ -1,0 +1,49 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "BillingServiceApplication",
+            "request": "launch",
+            "mainClass": "com.patientManagement.BillingService.BillingServiceApplication",
+            "projectName": "BillingService"
+        },
+        {
+            "type": "java",
+            "name": "AnalyticsServiceApplication",
+            "request": "launch",
+            "mainClass": "com.patientManagement.analyticsService.AnalyticsServiceApplication",
+            "projectName": "analyticsService"
+        },
+        {
+            "type": "java",
+            "name": "ApiGatewayApplication",
+            "request": "launch",
+            "mainClass": "com.patientManagement.apiGateway.ApiGatewayApplication",
+            "projectName": "apiGateway"
+        },
+        {
+            "type": "java",
+            "name": "AuthServiceApplication",
+            "request": "launch",
+            "mainClass": "com.patientManagement.authService.AuthServiceApplication",
+            "projectName": "authService"
+        },
+        {
+            "type": "java",
+            "name": "PatientServiceApplication",
+            "request": "launch",
+            "mainClass": "com.patientManagement.patientService.PatientServiceApplication",
+            "projectName": "demo"
+        }
+    ]
+}

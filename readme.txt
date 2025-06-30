@@ -308,6 +308,59 @@ Every request to patientService should pass through custom JwtValidationGatewayF
 
 provide a path through apiGateway to auth-docs similar to patient-docs
 
+testing :
+    unit testing: testing a particular method
+    integration testing:
+        how different Entities/classes interact with each other
+        how different services interact with each other
+    end to end testing:
+        how client communicates with the services using UI
+
+integrationTests:
+    uses rest-assured and junit-jupyter dependencies
+    remove the main folder and default test class
+    Create AuthIntegrationTest:
+        use BeforeAll annotation and setup() to specify the RestAssured.baseUri
+        create a method with Test annotation for checking token is valid for correct input
+            create a payload with email and password
+            use given().contentType().body().when().post().then().statusCode().body().extract().response()
+                and specify required args to get the response and store in the RestAssured Response
+        create a method with Test annotation for checking return unauthorized for incorrect payload
+            create payload
+            check given().contentType().body().when().post().then().statusCode(unauthorized)
+    Create PatientIntegrationTest:
+        extract RestAssured.Response from the /auth/login uri and get the token
+        pass the token as header to the get /api/patient request to get the patient
+            in the same format as above
+
+deployment:
+    since aws services cost even in the free tier we going to use localStack
+    localStack:
+        An archestration of aws services within the host computer
+        connect your docker desktop to the localStack using
+    aws services :
+        the microservices code in stored in VM called Ec2 instances
+        the database is stored inside the RdS
+        All the database and microservices are stored inside a vpc network
+            which prevents from public access
+        the services and database inside are accessed through a application load balancer
+            which acts as a bridge b/w frontend and apiGateway
+        IAC(Infrastructure as code):
+            we the services with the configurations to be used in the form of any programming language
+            then the code get converted into a cloud formation template 
+                which is then fed into the aws or localStack
+    download aws cli setup from the official aws.docs
+        use aws configure to set id and name
+        get the list of functions if needed
+
+infrastructure:
+    create a maven project called infrastructure
+        add amazon-cdk-lib and aws-java-sdk dependencies
+        then create a class under infrastructureApplicationTests.java
+            which extends the Stack class from aws
+
+
+    
 
 
 
