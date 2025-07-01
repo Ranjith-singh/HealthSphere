@@ -354,11 +354,169 @@ deployment:
         get the list of functions if needed
 
 infrastructure:
-    create a maven project called infrastructure
-        add amazon-cdk-lib and aws-java-sdk dependencies
-        then create a class under infrastructureApplicationTests.java
-            which extends the Stack class from aws
+    process:
+        configure the databases inside the Rds service of aws with the required credentials
+        configure a MSK(amazon managed streaming for apache kafka):
+            create a cluster and brokers which helps in communication with the cluster
+        Assign a Ecs service for each service:
+            Assign ASG's,LoadBalancers,computeEngines and AZ's
+            It creates a ECSTask that run the microservice:
+                it creates a multiple ECSTask to provide fault tolerance
+        All the services are configured inside a Ecs cluster which helps in ease of inter communication
+        All the Services, database and MSK are configured inside a vpc:
+            it creates private network that protects the services from the public access
+            we can create an ApplicationLoadBalancer that:
+                communicates with the vpc
+                it acts as bridge b/w the frontend client and our vpc
+    working:
+        create a maven project called infrastructure
+            add amazon-cdk-lib and aws-java-sdk dependencies
+            then create a class under infrastructureApplicationTests.java
+                which extends the Stack class from aws.cdk(cloud development kit)
+                create a localStack constructor which takes:
+                    App scope:
+                        defines that the scope of application comes under App which is the root tree
+                        the localStack acts as a child of App Class
+                        so all the cdk resources specified under the App are added to the localStack
+                    String id:
+                        Assign a particular id to the Stack which acts as identifier for the aws cdk
+                    StackProps props:
+                        these are used to assign configurations for the stack like
+                            accountId, regions, IAmRules for resources
+                it calls the super constructor which takes all the args passed to the localStack constructor
 
+                Vpc createVpc():
+                    create vpc using the vpc.Builder
+                        create() which takes scope of this stack and id for the vpc
+                        additional methods:
+                            name and maxAzs
+                create a class variable for vpc
+                    as it is used later in different methods
+                    assign value to it using the createVpc()
+
+                DatabaseInstance createDatabase():
+                    takes id and dbname as args
+                    create a Database using DatabaseInstance.Builder.create() pass the stack and id
+                    define engine using DatabaseInstanceEngine and build a postgres engine
+                    assign the vpc in which it'll be present
+                    provide the InstanceType which consist of InstanceClass and Size for running the database
+                    allocate storage(Mb)
+                    use Credentials.fromGeneratedSecret():
+                        to generate credentials from String "admin" and assign it to the service
+                    add databaseName and RemovalPolicy to destroy when the stack is destroyed
+                    build
+                create 2 DatabaseInstance from this:
+                    patientServiceDb and authServiceDb
+
+                CfnHealthCheck checkDbHealthCheck():
+                    pass id and DatabaseInstance as args
+                    use CfnHealthCheck.healthCheckConfig() to provide configurations for thr health check
+                        which uses the CfnHealthCheck.HealthCheckConfigProperty.builder()
+                        specify the type of request and port, ipAddress of the DatabaseInstance
+                        to get the port number use the Token.asNumber() 
+                            to get number from the DatabaseInstance.getDbInstanceEndpointPort()
+                            otherwise returns error "expected number got token"
+                        provide requestInterval and failureThreshold for the HealthCheckConfigProperty
+                        build the HealthCheckConfigProperty
+                    build the CfnHealthCheck
+                create the healthChecks for the databases
+                    patientServiceDb and authServiceDb
+
+                CfnCluster createMskCluster():
+                    use CfnCluster.Builder.create to create a Cfn Cluster
+                    provide clusterName, kafkaVersion and numberOfBrokerNodes
+                    use the CfnCluster.BrokerNodeGroupInfoProperty.builder() to specify brokerNodeGroupInfo:
+                        specify the instanceType, clientSubnets and brokerAzDistribution("DEFAULT")
+                        clientSubnets are fetched through the getPrivateSubnets
+                            and maps each subnet to getSubnetId and return list.of subnets
+                        build the BrokerNodeGroupInfoProperty
+                    build the CfnCluster
+                create the mskCluster and Assign value in the constructor
+
+                Cluster createEcsCluster():
+                    use Cluster.Builder.create to create Cluster
+                    provide vpc and defaultCloudMapNamespace
+                    use CloudMapNameSpaceOptions.builder() to build defaultCloudMapNamespace
+                        specify the name for the CloudMapNameSpaceOptions
+                        build the CloudMapNameSpaceOptions
+                    build the Cluster
+                create a class variable for Cluster and assign value in constructor
+                    because it is used in ecsService methods
+
+                FargateService createFargateService():
+                    pass id, imageName, list.of(ports), DatabaseInstance, additionalEnvVars as args
+                    Build a FargateTaskDefinition:
+                        use FargateTaskDefinition.Builder.create and provide stack and "task"+id
+                            as it needs to be unique for each task
+                        provide cpu and memoryLimitMiB
+                        build the FargateTaskDefinition
+                    Build the ContainerDefinitionOptions:
+                        use ContainerDefinitionOptions.builder()
+                        provide the image using ContainerImage.fromRegistry and pass the imageName
+                            it is fetched from the docker image formed
+                        provide the portMappings using the ports.stream()
+                            and for each port use the PortMapping.Builder to specify configurations
+                                specify the containerPort and hostPort and also the protocol
+                                build the PortMapping
+                            pass each PortMapping as a List to portMappings()
+                        use LogDriver.awsLogs to provide logging arg
+                            use AwsLogDriverProps.builder() to provide to awsLogs
+                                specify the logGroup and streamPrefix(imageName)
+                                Build the logGroup using the LogGroup.Builder.create
+                                    pass the stack and id+"LogGroup" as args
+                                        since id needs to be unique for each service
+                                    specify the logGroupName("/ecs/"+imageName) and
+                                        removalPolicy and retention
+                                    build the LogGroup
+                                build the AwsLogDriverProps
+                    create a map of envVars and put
+                        "SPRING_KAFKA_BOOTSTRAP_SERVERS" using the localhost.localStack.cloud
+                            provide the ports on which it'll run.
+                        if their are any additionalEnvVars add them to envVars using the putAll()
+                        if the DatabaseInstance is notNull:
+                            put the "SPRING_DATASOURCE_URL" and pass the "jdbc:postgresql://address:port/db"
+                                the address and port are fetched from the DatabaseInstance
+                                the db is the imageName
+                            put the "SPRING_DATASOURCE_USERNAME" to provide username "admin"
+                            put the "SPRING_DATASOURCE_PASSWORD" to provide password 
+                                using DatabaseInstance.getSecrets().secretValueFromJson("password").toString()
+                                    since the password is stored in the cdk
+                            put the "SPRING_JPA_HIBERNATE_DDL_AUTO" and "SPRING_SQL_INIT_MODE"
+                            put the "SPRING_DATASOURCE_HIKARI_INITIALIZATION_FAILED_TIMEOUT" in milliseconds
+                    pass the envVars as containerOptions variable of ContainerDefinitionOptions
+                        in the .environment()
+                    add the container inside the FargateTaskDefinition.addContainer()
+                        specify the id as imageName+"Container" and containerOptions.build as args
+                    Build a FargateService using the FargateService,Builder.create
+                        pass the cluster, taskDefination and serviceName(imageName)
+                        use assignPublicIp(False) from exposing the publicIp
+                    return the created FargateService
+                create the FargateService authService:
+                    pass id, imageName(auth-service), List.of(ports) and DatabaseInstance of authService
+                    in envVars pass the "JWT_SECRET" using the Map.of()
+                    add dependencies on the authServiceDb and authHealthCheck using the
+                        authService.getNode().addDependency()
+                in similar manner
+                create the FargateService billingService:
+                    specify both the http and grpc ports
+                    null for database and envVars
+                create the FargateService analyticsService:
+                    add dependency to mskCluster
+                create the FargateService patientService:
+                    add DatabaseInstance and envVars
+                    in envVars specify the "BILLING_SERVICE_GRPC_PORT" and "BILLING_SERVICE_ADDRESS"
+                    use domain related routing to get the address
+                        host.docker.internal because all services are placed inside the same network
+                    add dependencies on the patientServiceDb, patientServiceHealthCheck, BillingService and mskCluster
+                
+
+                
+                
+
+                
+
+
+                
 
     
 
