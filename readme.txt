@@ -390,6 +390,7 @@ infrastructure:
                         create() which takes scope of this stack and id for the vpc
                         additional methods:
                             name and maxAzs
+                            note : maxAzs should be min of 2 in us-east-1
                 create a class variable for vpc
                     as it is used later in different methods
                     assign value to it using the createVpc()
@@ -425,6 +426,7 @@ infrastructure:
                 CfnCluster createMskCluster():
                     use CfnCluster.Builder.create to create a Cfn Cluster
                     provide clusterName, kafkaVersion and numberOfBrokerNodes
+                    note: numberOfBrokerNodes%maxAzs==0
                     use the CfnCluster.BrokerNodeGroupInfoProperty.builder() to specify brokerNodeGroupInfo:
                         specify the instanceType, clientSubnets and brokerAzDistribution("DEFAULT")
                         clientSubnets are fetched through the getPrivateSubnets
@@ -508,6 +510,46 @@ infrastructure:
                     use domain related routing to get the address
                         host.docker.internal because all services are placed inside the same network
                     add dependencies on the patientServiceDb, patientServiceHealthCheck, BillingService and mskCluster
+                createApiGatewayService():
+                    create a FargateTaskDefinition using FargateTaskDefinition.Builder.create method
+                    specify the id, imageName, db, ports and envs in the method itself
+                        because we only create one service through ALB FargateService
+                    create a ContainerDefinitionOptions using ContainerDefinitionOptions.builder():
+                        in the .environment() method specify the env's in Map format
+                            specify "SPRING_PROFILES_ACTIVE" : "prod"
+                                to consider application-prod.yml instead of application.yml
+                    create a ApplicationLoadBalancedFargateService using the
+                        ApplicationLoadBalancedFargateService.Builder.create():
+                        because we need to create a ALB for the apiGateway to communicate
+                        specify the cluster, serviceName and taskDefination
+                        specify the count using desiredCount(1) and healthCheckGracePeriod() of 60 seconds
+                            desiredCount specifies the number of EcsTask to be running inside the EcsService
+        after create a new image without any errors for the Services
+            patientService, BillingService, analyticsService, authService and apiGateway
+                to be used by the cloudFormation template
+
+        create a shell script file to run the setOfCmds:
+            specify it is a shell script by #!bin/bash
+            set -e:
+                stops the script if any cmd fails
+            note: you can communicate with aws using the aws cmds
+                but since your aws is not configured on the cloud rather in the host computer using localStack
+                    you communicate with cli using the --endpoint-url=http://localhost:4566
+                        since localStack uses port 4566 by default
+            use aws --entrypoint-url=http://localhost:4566 cloudformation delete stack \
+                    --stack-name patient-management to delete any previous stack with that name
+                    note: \ is used to indicate next line is a continuation of the same line cmd
+            use aws --entrypoint-url=http://localhost:4566 cloudformation deploy --stack-name patient-management \
+                    --template-file "cloudformation template json file"
+                    to deploy a stack with name using the provided json file
+            use aws --entrypoint-url=http://localhost:4566 eblv2 describe-load-balancers \
+                    --query "LoadBalancers[0].DnsName" --output text
+                    to get the output of LoadBalancers[0].DnsName in text format
+                    the query is used for perform ops on the resources 
+            
+
+                             
+
                 
 
                 

@@ -1,0 +1,546 @@
+{
+	"info": {
+		"_postman_id": "c0794d9a-8edc-4f67-a5b3-46021caf015a",
+		"name": "patientManagement",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "41660772"
+	},
+	"item": [
+		{
+			"name": "patinetService",
+			"item": [
+				{
+					"name": "createPatient",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\" : \"john\",\r\n    \"email\" : \"examplegmail.com\",\r\n    \"address\" : \"\",\r\n    \"dateOfBirth\" : \"2001-08-31\",\r\n    \"registeredDate\" : \"2020-12-20\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4000/patient",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"patient"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updatePatient",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\" : \"updatedjohn\",\r\n    \"email\" : \"isabella.walker@example.com\",\r\n    \"address\" : \"#5180 2nd main 12th cross\",\r\n    \"dateOfBirth\" : \"2001-08-31\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/patient/440125dc-1579-4fc4-b96f-28f72501a746",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"patient",
+								"440125dc-1579-4fc4-b96f-28f72501a746"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "updatePatient",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"username\" : \"updatedjohn\",\r\n    \"email\" : \"isabella.walker@example.com\",\r\n    \"address\" : \"#5180 2nd main 12th cross\",\r\n    \"dateOfBirth\" : \"2001-08-31\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/patient/adfff778-5d69-4009-9778-60c9219308d7",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"patient",
+										"adfff778-5d69-4009-9778-60c9219308d7"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 14 Jun 2025 06:15:25 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Email already exists\"\n}"
+						}
+					]
+				},
+				{
+					"name": "deletePatient",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\" : \"updatedjohn\",\r\n    \"email\" : \"isabella.walker@example.com\",\r\n    \"address\" : \"#5180 2nd main 12th cross\",\r\n    \"dateOfBirth\" : \"2001-08-31\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/patient/440125dc-1579-4fc4-b96f-28f72501a746",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"patient",
+								"440125dc-1579-4fc4-b96f-28f72501a746"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getPatients",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:4000/patient",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"patient"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "billingService",
+			"item": [
+				{
+					"name": "New Request",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "apiGateway",
+			"item": [
+				{
+					"name": "getPatients",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\" : \"john\",\r\n    \"email\" : \"examplegmail.com\",\r\n    \"address\" : \"\",\r\n    \"dateOfBirth\" : \"2001-08-31\",\r\n    \"registeredDate\" : \"2020-12-20\"\r\n}"
+						},
+						"url": {
+							"raw": "{{authurl}}/api/patient",
+							"host": [
+								"{{authurl}}"
+							],
+							"path": [
+								"api",
+								"patient"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patientService-api-docs",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\" : \"john\",\r\n    \"email\" : \"examplegmail.com\",\r\n    \"address\" : \"\",\r\n    \"dateOfBirth\" : \"2001-08-31\",\r\n    \"registeredDate\" : \"2020-12-20\"\r\n}"
+						},
+						"url": {
+							"raw": "{{authurl}}/api-docs/patient",
+							"host": [
+								"{{authurl}}"
+							],
+							"path": [
+								"api-docs",
+								"patient"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "authService-api-docs",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\" : \"john\",\r\n    \"email\" : \"examplegmail.com\",\r\n    \"address\" : \"\",\r\n    \"dateOfBirth\" : \"2001-08-31\",\r\n    \"registeredDate\" : \"2020-12-20\"\r\n}"
+						},
+						"url": {
+							"raw": "{{authurl}}/api-docs/patient",
+							"host": [
+								"{{authurl}}"
+							],
+							"path": [
+								"api-docs",
+								"patient"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "authLogin",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\" : \"testuser@test.com\",\r\n    \"password\" : \"password123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{authUrl}}/login",
+							"host": [
+								"{{authUrl}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "authValidate",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{AccessToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{apiGatewayUrl}}/auth/validate",
+							"host": [
+								"{{apiGatewayUrl}}"
+							],
+							"path": [
+								"auth",
+								"validate"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "authService",
+			"item": [
+				{
+					"name": "login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\" : \"testuser@test.com\",\r\n    \"password\" : \"password123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{authUrl}}/login",
+							"host": [
+								"{{authUrl}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "validate",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "ApplicatioLoadBalancer",
+			"item": [
+				{
+					"name": "createPatient",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{ApplicationLoadBalancerAccessToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\" : \"johnALB\",\r\n    \"email\" : \"exampleALB@gmail.com\",\r\n    \"address\" : \"#5180 2nd main 12th cross\",\r\n    \"dateOfBirth\" : \"2001-08-31\",\r\n    \"registeredDate\" : \"2020-12-20\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ALBUrl}}/api/patient",
+							"host": [
+								"{{ALBUrl}}"
+							],
+							"path": [
+								"api",
+								"patient"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getPatients",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{ApplicationLoadBalancerAccessToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ALBUrl}}/api/patient",
+							"host": [
+								"{{ALBUrl}}"
+							],
+							"path": [
+								"api",
+								"patient"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "authLogin",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\" : \"testuser@test.com\",\r\n    \"password\" : \"password123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ALBUrl}}/auth/login",
+							"host": [
+								"{{ALBUrl}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "authValidate",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{ApplicationLoadBalancerAccessToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ALBUrl}}/auth/validate",
+							"host": [
+								"{{ALBUrl}}"
+							],
+							"path": [
+								"auth",
+								"validate"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:4000",
+			"type": "string"
+		},
+		{
+			"key": "apiGatewayUrl",
+			"value": "http://localhost:4004",
+			"type": "string"
+		},
+		{
+			"key": "authUrl",
+			"value": "http://localhost:4005",
+			"type": "string"
+		},
+		{
+			"key": "AccessToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "ApplicationLoadBalancerAccessToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "ALBUrl",
+			"value": "http://lb-6c9f9f5b.elb.localhost.localstack.cloud:4004",
+			"type": "string"
+		}
+	]
+}

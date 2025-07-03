@@ -1,5 +1,5 @@
 # Maven image for java 21 projects
-from maven:3.9.9-eclipse-temurin-21 as builder
+FROM maven:3.9.9-eclipse-temurin-21 AS builder
 
 # Specify the working directory
 WORKDIR /app
@@ -17,7 +17,7 @@ COPY /src ./src
 RUN mvn clean package
 
 # for running .jar files
-from openjdk:21-jdk as runner
+FROM openjdk:21-jdk AS runner
 
 WORKDIR /app
 
